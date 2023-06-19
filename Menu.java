@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sae;
+package modele;
 
 /**
  *
@@ -11,14 +11,15 @@ package sae;
 
 
 
-import java.util.InputMismatchException;
+import java.util.InputMismatchException; // programme de test des fonctionnalitées 
 import java.util.List;
 import java.util.Scanner;
 public class Menu {
     private static Graphe graphe;
+    
     public static void main(String[] args) {
         graphe = new Graphe();
-        String nomFichier = "jeuEssai.csv"; 
+        String nomFichier = "TestPerso.csv"; 
         graphe.chargerGraphe(nomFichier);
 
         
@@ -45,6 +46,10 @@ public class Menu {
             System.out.println("10. Modification des caractéristiques d'un lien");
             System.out.println("11. Voisin direct d'un type donné");
             System.out.println("12. Regarder si 2 centres sont à 2-distances");
+            System.out.println("13 Afficher tous les centres à 2 distance");
+            System.out.println("14 Afficher le chemin le plus court (distance) entre deux centres");
+            System.out.println("15 Afficher le chemin le plus fiable entre deux centres");
+            System.out.println("16 Afficher le chemin le plus court (duree) entre deux centres");
             System.out.print("Choix : ");
             
             try {
@@ -162,8 +167,57 @@ public class Menu {
                     }
                     break;
                 case 13:
-                    
-                    break;
+                    System.out.print("Entrez le nom du  centre : ");
+                    String nomCentre1_2distancetous = scanner.nextLine();
+                    List<Sommet> voisins3 = graphe.getVoisin2Distance(nomCentre1_2distancetous);
+                    for (Sommet sommet : voisins3){
+                        System.out.println(sommet.getNom());
+                    }
+                case 14:
+                   System.out.print("Entrez le nom du premier centre : ");
+                    String centreDepart = scanner.nextLine();
+                    System.out.print("Entrez le nom du deuxième centre : ");
+                    String centreArrivee = scanner.nextLine();
+                    Sommet s1 = graphe.sommets.get(centreDepart);
+                    Sommet s2 = graphe.sommets.get(centreArrivee);
+                    List<Sommet> cheminPlusCourt = graphe.dijkstraDistance(s1, s2);
+
+                    // Affichage du chemin
+                    System.out.println("Chemin le plus court en distance : ");
+                    for (Sommet centre : cheminPlusCourt) {
+                        System.out.println(centre.getNom());
+                    }
+                    break; 
+                case 15:
+                    System.out.print("Entrez le nom du premier centre : ");
+                    String centreDepart2 = scanner.nextLine();
+                    System.out.print("Entrez le nom du deuxième centre : ");
+                    String centreArrivee2 = scanner.nextLine();
+                    Sommet s12 = graphe.sommets.get(centreDepart2);
+                    Sommet s22 = graphe.sommets.get(centreArrivee2);
+                    List<Sommet> cheminPlusCourt2 = graphe.dijkstraFiabilite(s12, s22);
+
+                    // Affichage du chemin
+                    System.out.println("Chemin le plus fiable : ");
+                    for (Sommet centre : cheminPlusCourt2) {
+                        System.out.println(centre.getNom());
+                    }
+                    break; 
+                case 16 :
+                    System.out.print("Entrez le nom du premier centre : ");
+                    String centreDepart3 = scanner.nextLine();
+                    System.out.print("Entrez le nom du deuxième centre : ");
+                    String centreArrivee3 = scanner.nextLine();
+                    Sommet s13 = graphe.sommets.get(centreDepart3);
+                    Sommet s23 = graphe.sommets.get(centreArrivee3);
+                    List<Sommet> cheminPlusCourt3 = graphe.dijkstraFiabilite(s13, s23);
+
+                    // Affichage du chemin
+                    System.out.println("Chemin le plus court en durée : ");
+                    for (Sommet centre : cheminPlusCourt3) {
+                        System.out.println(centre.getNom());
+                    }
+                    break; 
                 case 0:
                     System.out.println("\nAu revoir !");
                     break;
