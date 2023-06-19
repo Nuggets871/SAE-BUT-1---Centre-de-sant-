@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sae; 
+package modele; 
 
 /**
  *
@@ -10,24 +10,23 @@ package sae;
  */
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 
-class Graphe {
-    private HashMap<String, Sommet> sommets; 
-    private List<Lien> liens;
+public class Graphe {
+    public final LinkedHashMap<String, Sommet> sommets; // possibilité d'utilisé HashMap afin d'optimisé la mémoire mais pas la peine pour cette sae
+    private final List<Lien> liens;
+
+
 
     public Graphe() {
-        sommets = new HashMap<>();
+        sommets = new LinkedHashMap<>();
         liens = new ArrayList<>();
     }
     public HashMap<String, Sommet> getSommets() {
@@ -98,8 +97,8 @@ class Graphe {
         return sommets.size();
     }
     
-    public int getNombreLiens() { // renvoie le nombre de lien total, on ajoute un 1 car l'indice d'une liste commence à 0, or on cherche le nombre d'éléments
-        return liens.size()+1;
+    public int getNombreLiens() { // renvoie le nombre de lien total
+        return liens.size();
     }
 
     public void afficherInformationsCentres() { // affiche les informations de tous les centres du graphe, il est possible que l'ordre soit inhabituel car on utilise une HashMap et non une LinkedHashMap 
@@ -136,145 +135,148 @@ class Graphe {
     }
     
     public boolean estLie(String nomCentre1, String nomCentre2) {
-    Sommet sommet1 = sommets.get(nomCentre1);
-    Sommet sommet2 = sommets.get(nomCentre2);
-    
-    if (sommet1 == null || sommet2 == null) {
-        return false; // Les centres n'existent pas dans le graphe
-    }
-    for (Lien lien : liens) {
-        if ((lien.getSommet1().getNom().equals(sommet1.getNom()) && lien.getSommet2().getNom().equals(sommet2.getNom()))
-            || (lien.getSommet2().getNom().equals(sommet1.getNom()) && lien.getSommet1().getNom().equals(sommet2.getNom()))) {
-            return true; // Les centres sont reliés par ce lien
-        }
-    }
-    
-    return false; // Les centres ne sont pas reliés
-    }
+        Sommet sommet1 = sommets.get(nomCentre1);
+        Sommet sommet2 = sommets.get(nomCentre2);
 
-    
-    public boolean existeCentre(String nomCentre) {
-        return sommets.containsKey(nomCentre);
+        if (sommet1 == null || sommet2 == null) {
+            return false; // Les centres n'existent pas dans le graphe
+        }
+        for (Lien lien : liens) {
+            if ((lien.getSommet1().getNom().equals(sommet1.getNom()) && lien.getSommet2().getNom().equals(sommet2.getNom()))
+                || (lien.getSommet2().getNom().equals(sommet1.getNom()) && lien.getSommet1().getNom().equals(sommet2.getNom()))) {
+                return true; // Les centres sont reliés par ce lien
+            }
+        }
+
+        return false; // Les centres ne sont pas reliés
+        }
+
+
+        public boolean existeCentre(String nomCentre) {
+            return sommets.containsKey(nomCentre);
     }
+    
     public Lien getLienEntreCentres(String nomCentre1, String nomCentre2) {
-    Sommet sommet1 = sommets.get(nomCentre1);
-    Sommet sommet2 = sommets.get(nomCentre2);
+        Sommet sommet1 = sommets.get(nomCentre1);
+        Sommet sommet2 = sommets.get(nomCentre2);
 
-    if (sommet1 == null || sommet2 == null) {
-        return null; // L'un ou les deux centres n'existent pas dans le graphe
-    }
-
-    for (Lien lien : liens) {
-        if ((lien.getSommet1().getNom().equals(sommet1.getNom()) && lien.getSommet2().getNom().equals(sommet2.getNom()))
-                || (lien.getSommet1().getNom().equals(sommet2.getNom()) && lien.getSommet2().getNom().equals(sommet1.getNom()))) {
-            return lien; // Retourne l'objet Lien correspondant
+        if (sommet1 == null || sommet2 == null) {
+            return null; // L'un ou les deux centres n'existent pas dans le graphe
         }
-    }
 
-    return null; // Les centres ne sont pas reliés
+        for (Lien lien : liens) {
+            if ((lien.getSommet1().getNom().equals(sommet1.getNom()) && lien.getSommet2().getNom().equals(sommet2.getNom()))
+                    || (lien.getSommet1().getNom().equals(sommet2.getNom()) && lien.getSommet2().getNom().equals(sommet1.getNom()))) {
+                return lien; // Retourne l'objet Lien correspondant
+            }
+        }
+
+        return null; // Les centres ne sont pas reliés
     }
     
     public void afficherSommetParType(String type) {
-    int count = 0;
-    
-    for (Sommet sommet : sommets.values()) {
-        if (sommet.getType().equalsIgnoreCase(type)) {
-            System.out.println(sommet.getNom());
-            count++;
+        int count = 0;
+
+        for (Sommet sommet : sommets.values()) {
+            if (sommet.getType().equalsIgnoreCase(type)) {
+                System.out.println(sommet.getNom());
+                count++;
+            }
         }
-    }
-    
-    System.out.println("Nombre de sommets de type " + type + " : " + count);
+
+        System.out.println("Nombre de sommets de type " + type + " : " + count);
     }
     
     public List<Sommet> getVoisinDirect(String nomSommet) {
-    List<Sommet> voisins = new ArrayList<>();
-    
-    Sommet sommet = sommets.get(nomSommet);
-    if (sommet != null) {
-        for (Lien lien : liens) {
-            if (lien.getSommet1().equals(sommet)) {
-                voisins.add(lien.getSommet2());
-            } else if (lien.getSommet2().equals(sommet)) {
-                voisins.add(lien.getSommet1());
+        List<Sommet> voisins = new ArrayList<>();
+
+        Sommet sommet = sommets.get(nomSommet);
+        if (sommet != null) {
+            for (Lien lien : liens) {
+                if (lien.getSommet1().equals(sommet)) {
+                    voisins.add(lien.getSommet2());
+                } else if (lien.getSommet2().equals(sommet)) {
+                    voisins.add(lien.getSommet1());
+                }
             }
         }
+
+        return voisins;
     }
-    
-    return voisins;
-}
 
     public void modifierLien(String nomCentre1, String nomCentre2, int fiabilite, int distance, int duree) {
-    Sommet sommet1 = sommets.get(nomCentre1);
-    Sommet sommet2 = sommets.get(nomCentre2);
+        Sommet sommet1 = sommets.get(nomCentre1);
+        Sommet sommet2 = sommets.get(nomCentre2);
 
-    if (sommet1 == null || sommet2 == null) {
-        System.out.println("Les centres spécifiés n'existent pas.");
-        return;
-    }
+        if (sommet1 == null || sommet2 == null) {
+            System.out.println("Les centres spécifiés n'existent pas.");
+            return;
+        }
 
-    boolean lienTrouve = false;
+        boolean lienTrouve = false;
 
-    for (Lien lien : liens) {
-        if ((lien.getSommet1().getNom().equals(sommet1.getNom()) && lien.getSommet2().getNom().equals(sommet2.getNom()))
-                || (lien.getSommet1().getNom().equals(sommet2.getNom()) && lien.getSommet2().getNom().equals(sommet1.getNom()))) {
+        for (Lien lien : liens) {
+            if ((lien.getSommet1().getNom().equals(sommet1.getNom()) && lien.getSommet2().getNom().equals(sommet2.getNom()))
+                    || (lien.getSommet1().getNom().equals(sommet2.getNom()) && lien.getSommet2().getNom().equals(sommet1.getNom()))) {
 
-            lien.setFiabilite(fiabilite);
-            lien.setDistance(distance);
-            lien.setDureeMoyenne(duree);
+                lien.setFiabilite(fiabilite);
+                lien.setDistance(distance);
+                lien.setDureeMoyenne(duree);
 
-            System.out.println("Les informations du lien entre les centres " + nomCentre1 + " et " + nomCentre2 + " ont été modifiées.");
-            lienTrouve = true;
+                System.out.println("Les informations du lien entre les centres " + nomCentre1 + " et " + nomCentre2 + " ont été modifiées.");
+                lienTrouve = true;
 
-            break;
+                break;
+            }
+        }
+
+        if (!lienTrouve) {
+            System.out.println("Aucun lien trouvé entre les centres " + nomCentre1 + " et " + nomCentre2 + ".");
         }
     }
-
-    if (!lienTrouve) {
-        System.out.println("Aucun lien trouvé entre les centres " + nomCentre1 + " et " + nomCentre2 + ".");
-    }
-}
 
     
     public List<Sommet> listerVoisinsDirectsDeType(String nomSommet, String typeVoisin) {
-    Sommet sommet = sommets.get(nomSommet);
+        Sommet sommet = sommets.get(nomSommet);
 
-    if (sommet == null) {
-        System.out.println("Le sommet spécifié n'existe pas.");
-        return null;
-    }
-
-    List<Sommet> voisins = new ArrayList<>();
-
-    for (Lien lien : liens) {
-        if (lien.getSommet1().equals(sommet) && lien.getSommet2().getType().equals(typeVoisin)) {
-            voisins.add(lien.getSommet2());
-        } else if (lien.getSommet2().equals(sommet) && lien.getSommet1().getType().equals(typeVoisin)) {
-            voisins.add(lien.getSommet1());
+        if (sommet == null) {
+            System.out.println("Le sommet spécifié n'existe pas.");
+            return null;
         }
-    }
 
-    return voisins;
-}
-    public boolean sontA2Distance(String nomSommet1, String nomSommet2) {
-    Sommet sommet1 = sommets.get(nomSommet1);
-    Sommet sommet2 = sommets.get(nomSommet2);
+        List<Sommet> voisins = new ArrayList<>();
 
-    if (sommet1 == null || sommet2 == null) {
-        return false; // Les sommets n'existent pas dans le graphe
-    }
-
-    for (Lien lien : liens) {  // pour tous les liens
-        if (lien.getSommet1().equals(sommet1)) { // si dans la liste de lien le premier sommet (un lien est constitué de 2 sommets, on regarde ici le premier) correspond au premier sommet donné par l'utilisateur
-            Sommet voisin1 = lien.getSommet2(); // on récupère le centre avec lequel ce sommet est lié (donc le deuxieme sommet du lien) 
-            if (sontVoisins(voisin1, sommet2)) { // si ce sommet est voisin du deuxième sommet donné par l'utilisateur, ils sont à 2 distances
-                return true; // Ils sont à une distance de 2 
+        for (Lien lien : liens) {
+            if (lien.getSommet1().equals(sommet) && lien.getSommet2().getType().equals(typeVoisin)) {
+                voisins.add(lien.getSommet2());
+            } else if (lien.getSommet2().equals(sommet) && lien.getSommet1().getType().equals(typeVoisin)) {
+                voisins.add(lien.getSommet1());
             }
-        } 
+        }
+
+        return voisins;
+    }
+    public boolean sontA2Distance(String sommet1, String sommet2) {
+        List<Sommet> voisins1 = getVoisinDirect(sommet1);
+        List<Sommet> voisins2 = getVoisinDirect(sommet2);
+
+        for (Sommet voisin1 : voisins1) {
+            List<Sommet> voisinsVoisin1 = getVoisinDirect(voisin1.getNom());
+            if (voisinsVoisin1.contains(sommets.get(sommet2))) {
+                return true;
+            }
+        }
+
+        for (Sommet voisin2 : voisins2) {
+            List<Sommet> voisinsVoisin2 = getVoisinDirect(voisin2.getNom());
+            if (voisinsVoisin2.contains(sommets.get(sommet1))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    return false; // Ils ne sont pas à une distance de 2
-    }
 
     public boolean sontVoisins(Sommet sommet1, Sommet sommet2) {
         for (Lien lien : liens) {
@@ -285,8 +287,302 @@ class Graphe {
         }
         return false; // Les sommets ne sont pas voisins
     }
+    
+
+    public List<Sommet> getVoisin2Distance(String nomSommet) { // retourne les voisins à 2 distances + ceux qui sont à 2 distance et en même temps à 1 distance
+        List<Sommet> voisins2Distance = new ArrayList<>();
+
+        Sommet sommet = sommets.get(nomSommet);
+        if (sommet != null) {
+            List<Sommet> voisinsDirects = getVoisinDirect(nomSommet);
+
+            for (Sommet voisinDirect : voisinsDirects) {
+                List<Sommet> voisinsVoisinDirect = getVoisinDirect(voisinDirect.getNom());
+                for (Sommet voisinVoisinDirect : voisinsVoisinDirect) {
+                    if (!voisinVoisinDirect.equals(sommet)
+                            && !voisins2Distance.contains(voisinVoisinDirect)) {
+                        voisins2Distance.add(voisinVoisinDirect);
+                    }
+                }
+            }
+        }
+
+        return voisins2Distance;
+    }
+    
+    public List<Sommet> getVoisin2Distance2(String nomSommet) { // retourne les voisins à 2 distances sans ceux qui sont aussi à une distance
+        List<Sommet> voisins2Distance = new ArrayList<>();
+
+        Sommet sommet = sommets.get(nomSommet);
+        if (sommet != null) {
+            List<Sommet> voisinsDirects = getVoisinDirect(nomSommet);
+
+            for (Sommet voisinDirect : voisinsDirects) {
+                List<Sommet> voisinsVoisinDirect = getVoisinDirect(voisinDirect.getNom());
+                for (Sommet voisinVoisinDirect : voisinsVoisinDirect) {
+                    if (!voisinVoisinDirect.equals(sommet) && !voisinsDirects.contains(voisinVoisinDirect)
+                            && !voisins2Distance.contains(voisinVoisinDirect)) {
+                        voisins2Distance.add(voisinVoisinDirect);
+                    }
+                }
+            }
+        }
+
+        return voisins2Distance;
+    }
 
 
+
+    public List<Sommet> getCentreMax2Distance(String nomSommet){
+        List<Sommet> centreMax2Distance = new ArrayList<>();
+        Sommet sommet = sommets.get(nomSommet);
+        if (sommet!=null){
+            centreMax2Distance = getVoisinDirect(nomSommet);
+            List<Sommet> voisin2D = getVoisin2Distance2(nomSommet);
+            for (Sommet voisin : voisin2D){
+                centreMax2Distance.add(voisin);
+            }    
+
+        }
+
+        return centreMax2Distance;    
+        }
+
+    public List<Sommet> getMaterniteMax2Distance(List<Sommet> lMax2Distance){
+        List<Sommet> materniteMax2Distance = new ArrayList<>();
+
+        if (lMax2Distance!=null){
+            for (Sommet sommet : lMax2Distance){
+                if ("M".equals(sommet.getType())){
+                    materniteMax2Distance.add(sommet);
+                }
+            }
+        }
+        return materniteMax2Distance;
+        }
+    public List<Sommet> getOperatoireMax2Distance(List<Sommet> lMax2Distance){
+        List<Sommet> operatoireMax2Distance = new ArrayList<>();
+
+        if (lMax2Distance!=null){
+            for (Sommet sommet : lMax2Distance){
+                if ("O".equals(sommet.getType())){
+                    operatoireMax2Distance.add(sommet);
+                }
+            }
+        }
+        return operatoireMax2Distance;
+        }
+    public List<Sommet> getNutritionMax2Distance(List<Sommet> lMax2Distance){
+        List<Sommet> nutritionMax2Distance = new ArrayList<>();
+
+        if (lMax2Distance!=null){
+            for (Sommet sommet : lMax2Distance){
+                if ("N".equals(sommet.getType())){
+                    nutritionMax2Distance.add(sommet);
+                }
+            }
+        }
+        return nutritionMax2Distance;
+        }
+
+
+    
+    public int getNombreMaternite(){
+            int cpt = 0;
+            for (Sommet sommet : sommets.values()){
+                if (sommet.getType().equals("M"))
+                    cpt +=1;
+            }
+            return cpt;
+        }
+        public int getNombreOperatoire(){
+            int cpt = 0;
+            for (Sommet sommet : sommets.values()){
+                if (sommet.getType().equals("O"))
+                    cpt +=1;
+            }
+            return cpt;
+        }
+        public int getNombreNutrition(){
+            int cpt = 0;
+            for (Sommet sommet : sommets.values()){
+                if (sommet.getType().equals("N"))
+                    cpt +=1;
+            }
+            return cpt;
+        }
+    
+    
+    public List<Sommet> dijkstraDistance(Sommet depart, Sommet arrivee) {
+        // Création des structures de données nécessaires
+        Map<Sommet, Double> distances = new HashMap<>();  // Distances depuis le sommet de départ
+        Map<Sommet, Sommet> predecesseurs = new HashMap<>();  // Prédécesseur de chaque sommet
+        Set<Sommet> nonVisites = new HashSet<>();  // Sommets non visités
+
+        // Initialisation des distances à l'infini, sauf pour le sommet de départ
+        for (Sommet sommet : sommets.values()) {
+            distances.put(sommet, Double.POSITIVE_INFINITY);
+            nonVisites.add(sommet);
+        }
+        distances.put(depart, 0.0);
+
+        while (!nonVisites.isEmpty()) {
+            // Recherche du sommet non visité avec la distance minimale
+            Sommet sommetCourant = plusProcheVoisin(nonVisites, distances);
+            if (sommetCourant==null){
+                return null;
+            }
+            // Si le sommet courant est l'arrivée, on a trouvé le chemin le plus court
+            if (sommetCourant.equals(arrivee)) {
+                return construireChemin(predecesseurs, arrivee);
+            }
+
+            // Mise à jour des distances des voisins non visités
+            for (Sommet voisin : getVoisinDirect(sommetCourant.getNom())) {
+                if (nonVisites.contains(voisin)) {
+                    double distanceVoisin = distances.get(sommetCourant) + getLienEntreCentres(sommetCourant.getNom(), voisin.getNom()).getDistance();
+                    if (distanceVoisin < distances.get(voisin)) {
+                        distances.put(voisin, distanceVoisin);
+                        predecesseurs.put(voisin, sommetCourant);
+                    }
+                }
+            }
+
+            // Marquer le sommet courant comme visité
+            nonVisites.remove(sommetCourant);
+        }
+
+        // Aucun chemin trouvé
+        return null;
+    }
+
+    private Sommet plusProcheVoisin(Set<Sommet> sommets, Map<Sommet, Double> distances) {
+        Sommet plusProche = null;
+        double distanceMin = Double.POSITIVE_INFINITY;
+
+        for (Sommet sommet : sommets) {
+            double distance = distances.get(sommet);
+            if (distance < distanceMin) {
+                distanceMin = distance;
+                plusProche = sommet;
+            }
+        }
+
+        return plusProche;
+    }
+
+    private List<Sommet> construireChemin(Map<Sommet, Sommet> predecesseurs, Sommet arrivee) {
+        List<Sommet> chemin = new ArrayList<>();
+        Sommet sommet = arrivee;
+
+        while (sommet != null) {
+            chemin.add(0, sommet);
+            sommet = predecesseurs.get(sommet);
+        }
+
+        return chemin;
+    }
+
+    public List<Sommet> dijkstraFiabilite(Sommet depart, Sommet arrivee) {
+        // Création des structures de données nécessaires
+        Map<Sommet, Double> fiabilite = new HashMap<>();  // Fiabilités depuis le sommet de départ
+        Map<Sommet, Sommet> predecesseurs = new HashMap<>();  // Prédécesseur de chaque sommet
+        Set<Sommet> nonVisites = new HashSet<>();  // Sommets non visités
+
+        // Initialisation des fiabilités à zéro, sauf pour le sommet de départ
+        for (Sommet sommet : sommets.values()) {
+            fiabilite.put(sommet, 0.0);
+            nonVisites.add(sommet);
+        }
+        fiabilite.put(depart, 10.0);
+
+        while (!nonVisites.isEmpty()) {
+            // Recherche du sommet non visité avec la fiabilité maximale
+            Sommet sommetCourant = plusFiableVoisin(nonVisites, fiabilite);
+            if (sommetCourant==null){
+                return null;
+            }
+            // Si le sommet courant est l'arrivée, on a trouvé le chemin le plus fiable
+            if (sommetCourant.equals(arrivee)) {
+                return construireChemin(predecesseurs, arrivee);
+            }
+
+            // Mise à jour des fiabilités des voisins non visités
+            for (Sommet voisin : getVoisinDirect(sommetCourant.getNom())) {
+                if (nonVisites.contains(voisin)) {
+                    double fiabiliteVoisin = Math.min(fiabilite.get(sommetCourant), getLienEntreCentres(sommetCourant.getNom(), voisin.getNom()).getFiabilite());
+                    if (fiabiliteVoisin > fiabilite.get(voisin)) {
+                        fiabilite.put(voisin, fiabiliteVoisin);
+                        predecesseurs.put(voisin, sommetCourant);
+                    }
+                }
+            }
+
+            // Marquer le sommet courant comme visité
+            nonVisites.remove(sommetCourant);
+        }
+
+        // Aucun chemin trouvé
+        return null;
+    }
+
+    private Sommet plusFiableVoisin(Set<Sommet> sommets, Map<Sommet, Double> fiabilites) {
+        Sommet plusFiable = null;
+        double fiabiliteMax = 0.0;
+
+        for (Sommet sommet : sommets) {
+            double fiabilite = fiabilites.get(sommet);
+            if (fiabilite > fiabiliteMax) {
+                fiabiliteMax = fiabilite;
+                plusFiable = sommet;
+            }
+        }
+
+        return plusFiable;
+    }
+
+    public List<Sommet> dijkstraDuree(Sommet depart, Sommet arrivee) {
+        // Création des structures de données nécessaires
+        Map<Sommet, Double> durees = new HashMap<>();  // Durées depuis le sommet de départ
+        Map<Sommet, Sommet> predecesseurs = new HashMap<>();  // Prédécesseur de chaque sommet
+        Set<Sommet> nonVisites = new HashSet<>();  // Sommets non visités
+
+        // Initialisation des durées à l'infini, sauf pour le sommet de départ
+        for (Sommet sommet : sommets.values()) {
+            durees.put(sommet, Double.POSITIVE_INFINITY);
+            nonVisites.add(sommet);
+        }
+        durees.put(depart, 0.0);
+
+        while (!nonVisites.isEmpty()) {
+            // Recherche du sommet non visité avec la durée minimale
+            Sommet sommetCourant = plusProcheVoisin(nonVisites, durees);
+            if (sommetCourant==null){
+                return null;
+            }
+            // Si le sommet courant est l'arrivée, on a trouvé le chemin le plus court en durée
+            if (sommetCourant.equals(arrivee)) {
+                return construireChemin(predecesseurs, arrivee);
+            }
+
+            // Mise à jour des durées des voisins non visités
+            for (Sommet voisin : getVoisinDirect(sommetCourant.getNom())) {
+                if (nonVisites.contains(voisin)) {
+                    double dureeVoisin = durees.get(sommetCourant) + getLienEntreCentres(sommetCourant.getNom(), voisin.getNom()).getDureeMoyenne();
+                    if (dureeVoisin < durees.get(voisin)) {
+                        durees.put(voisin, dureeVoisin);
+                        predecesseurs.put(voisin, sommetCourant);
+                    }
+                }
+            }
+
+            // Marquer le sommet courant comme visité
+            nonVisites.remove(sommetCourant);
+        }
+
+        // Aucun chemin trouvé
+        return null;
+    }
 
 
 
